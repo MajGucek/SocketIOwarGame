@@ -100,6 +100,13 @@ if (getOpponent(socket)) {
     getOpponent(socket).emit("game.begin", isOpponent, player1deck); //first player
 }
 
+    socket.on("switchTurn", () => {
+        if (getOpponent(socket)) {
+            socket.emit("switchedTurn", isOpponent); // first player
+            getOpponent(socket).emit("switchedTurn", !isOpponent); //second player 
+        }
+    });
+
     socket.on("compare.deck", (playersDeck, isPlayer1, card) => {
         if (isPlayer1 == true) {
             socket.emit("win");

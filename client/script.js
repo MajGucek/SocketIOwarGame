@@ -14,6 +14,16 @@ socket.on("game.begin", (isOpponent, deck) => {
   amPlayer1 = isOpponent;
 
 
+  socket.on("switchedTurn", (isOpponent) => {
+    if (isOpponent == false) {
+      myTurn = true;
+      renderTurn(); 
+    } else {
+      myTurn = false;
+      renderTurn();
+    }
+  });
+
 
   if (isOpponent == false) {
     myTurn = true;
@@ -22,6 +32,7 @@ socket.on("game.begin", (isOpponent, deck) => {
     myTurn = false;
     renderTurn();
   }
+
 
 
   
@@ -44,15 +55,11 @@ function renderTurn() {
 
 
 function onDraw() {
-  console.log("draw");
   socket.emit("compare.deck", playerDeck[x], amPlayer1, x);
-  myTurn = false;
-  renderTurns();
+  socket.emit("switchTurn");
 }
 
-socket.on("win", () => {
-  console.log("WIN")
-})
+
 
 
 
