@@ -31,9 +31,10 @@ body {
 <body>
 
 <div class="board">
-    <button id="draw">Draw A Card</button>
+    <button id="draw" onclick="onDraw()">Draw A Card</button>
 </div>
-<div id="messages">Waiting for opponent to join...</div>
+<div id="messages"></div>
+<div id="joined">Waiting for opponent to join...</div>
     
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="socket.io/socket.io.js"></script>

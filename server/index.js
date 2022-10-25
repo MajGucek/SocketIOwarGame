@@ -80,8 +80,8 @@ function getOpponent(socket) {
 
 
 const deck = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-let player1 = deck.splice(0, 5);
-let player2 = deck.splice(0, 5);
+let player1deck = deck.splice(0, 5);
+let player2deck = deck.splice(0, 5);
 
 
 let isOpponent = false;
@@ -96,18 +96,24 @@ io.on("connection", function(socket) {
 
 
 if (getOpponent(socket)) {
-    socket.emit("game.begin", player2, !isOpponent); // second player
-    getOpponent(socket).emit("game.begin", player1, isOpponent); //first player
+    socket.emit("game.begin", !isOpponent, player2deck); // second player
+    getOpponent(socket).emit("game.begin", isOpponent, player1deck); //first player
 }
 
-socket.on("make.move", (data) => {
-    if (!getOpponent(socket)) {
-        return;
-    }
+    socket.on("compare.deck", (playersDeck, isPlayer1, card) => {
+        if (isPlayer1 == true) {
+            socket.emit("win");
+        } else { // this else is for IF in line 104
+            
+        }
+    });
 
-    socket.emit("move.made", data);
-    getOpponent(socket).emit("move.made", data);
-});
+
+
+
+
+
+
 
 socket.on("disconnect", () => {
     if (getOpponent(socket)) {
