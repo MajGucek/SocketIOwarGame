@@ -17,10 +17,10 @@ socket.on("game.begin", (isOpponent, deck) => {
 
   if (isOpponent == false) {
     myTurn = true;
-    renderTurnPlayer1(); 
+    renderTurn(); 
   } else {
     myTurn = false;
-    renderTurnPlayer2();
+    renderTurn();
   }
 
 
@@ -29,25 +29,16 @@ socket.on("game.begin", (isOpponent, deck) => {
 
 
 });
-function renderTurnPlayer1() {
+function renderTurn() {
   if (myTurn == false) {
     $("#messages").text("Your opponent's turn");
     $("#draw").attr("disabled", true);
   } else {
     $("#messages").text("Your turn");
     $("#draw").removeAttr("disabled");
-    
   }
 }
-function renderTurnPlayer2() {
-  if (myTurn == true) {
-    $("#messages").text("Your opponent's turn");
-    $("#draw").attr("disabled", true);
-  } else {
-    $("#messages").text("Your turn");
-    $("#draw").removeAttr("disabled");
-  }
-}
+
 
 
 
