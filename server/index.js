@@ -80,15 +80,37 @@ function getOpponent(socket) {
 
 
 const deck = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-let player1deck = deck.splice(0, 5);
-let player2deck = deck.splice(0, 5);
+let CopyDeck = deck;
+function shuffle(array) {
+    let currentIndex = array.length,  randomIndex;
+  
+    // While there remain elements to shuffle.
+    while (currentIndex != 0) {
+  
+      // Pick a remaining element.
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex--;
+  
+      // And swap it with the current element.
+      [array[currentIndex], array[randomIndex]] = [
+        array[randomIndex], array[currentIndex]];
+    }
+  
+    return array;
+}
+shuffle(CopyDeck);
 
 
-let isOpponent = false;
+let player1deck = CopyDeck.splice(0, 5);
+let player2deck = CopyDeck.splice(0, 5);
 
 
+let isPlayer1 = true;
 
+let isPlayer1turn = false;
 
+let player1wins = false;
+let player2wins = false;
 
 io.on("connection", function(socket) {
     joinGame(socket);
@@ -96,24 +118,37 @@ io.on("connection", function(socket) {
 
 
 if (getOpponent(socket)) {
-    socket.emit("game.begin", !isOpponent, player2deck); // second player
-    getOpponent(socket).emit("game.begin", isOpponent, player1deck); //first player
+    socket.emit("game.begin", !isPlayer1, player2deck); // second player
+    getOpponent(socket).emit("game.begin", isPlayer1, player1deck); //first player
 }
 
-    socket.on("switchTurn", () => {
-        if (getOpponent(socket)) {
-            socket.emit("switchedTurn", isOpponent); // first player
-            getOpponent(socket).emit("switchedTurn", !isOpponent); //second player 
-        }
-    });
-
-    socket.on("compare.deck", (playersDeck, isPlayer1, card) => {
+    
+    socket.on("move", (isPlayer1, deck, x) => {
         if (isPlayer1 == true) {
-            socket.emit("win");
-        } else { // this else is for IF in line 104
-            
+           if (deck[x] > player2deck[x]) {
+                player1wins = true
+                player2wins = false;
+           } else {
+               player1wins = false;
+               player2wins = true;
+           }
+        } else if (isPlayer1 == false) {
+            if (deck[x] > player1deck) {
+                player1wins = false;
+                player2wins = true;
+            } else {
+                player1wins = true;
+                player2wins = false;
+            }
+        }
+
+
+        if (getOpponent(socket)) {
+            socket.emit("switchTurn", player1wins); //second player
+            getOpponent(socket).emit("switchTurn", player1wins); // first player
         }
     });
+    
 
 
 
@@ -122,10 +157,6 @@ if (getOpponent(socket)) {
 
 
 
-socket.on("disconnect", () => {
-    if (getOpponent(socket)) {
-        getOpponent(socket).emit("opponent.left");
-    }
-});
+
 });
   
