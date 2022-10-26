@@ -111,9 +111,13 @@ let isPlayer1turn = false;
 
 let player1wins = false;
 let player2wins = false;
+let player1turn = 0;
+let player2turn = 0;
+let x = 0;
 
 io.on("connection", function(socket) {
     joinGame(socket);
+    x = 0;
 
 
 
@@ -123,17 +127,17 @@ if (getOpponent(socket)) {
 }
 
     
-    socket.on("move", (isPlayer1, deck, x) => {
+    socket.on("move", (isPlayer1, deck) => {
         if (isPlayer1 == true) {
            if (deck[x] > player2deck[x]) {
-                player1wins = true
+                player1wins = true;
                 player2wins = false;
            } else {
                player1wins = false;
                player2wins = true;
            }
         } else if (isPlayer1 == false) {
-            if (deck[x] > player1deck) {
+            if (deck[x] > player1deck[x]) {
                 player1wins = false;
                 player2wins = true;
             } else {
@@ -144,9 +148,14 @@ if (getOpponent(socket)) {
 
 
         if (getOpponent(socket)) {
-            socket.emit("switchTurn", player1wins); //second player
-            getOpponent(socket).emit("switchTurn", player1wins); // first player
+            socket.emit("switchTurn"); //second player
+            socket.emit("winORlose", player2wins, player1wins, x);
+            console.log(player1wins, player2wins);
+            
+            getOpponent(socket).emit("switchTurn"); // first player
+            getOpponent(socket).emit("winORlose", player1wins, player2wins, x);
         }
+        x++;
     });
     
 

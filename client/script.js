@@ -4,7 +4,7 @@ const draw = document.getElementById("draw");
 let amPlayer1;
 let myTurn;
 let Deck;
-let x = 0;
+
 
 socket.on("game.begin", (isPlayer1, deck) => {
   // is opponent exprected to be false if refreshed first
@@ -17,7 +17,7 @@ socket.on("game.begin", (isPlayer1, deck) => {
 
   switchTurns();
 
-
+  console.log(Deck);
 
 
 
@@ -25,16 +25,21 @@ socket.on("game.begin", (isPlayer1, deck) => {
 
 
 draw.onclick = () => {
-  socket.emit("move", isPlayer1, Deck, x);
+  socket.emit("move", amPlayer1, Deck);
   $("#draw").attr("disabled", true);
-  x++;
 }
 
 socket.on("switchTurn", () => {
   myTurn = !myTurn;
   switchTurns();
 });
-
+socket.on("winORlose", (iWin, heWins, x) => {
+  if (iWin == false && heWins == true) {
+    console.log("You win", x);
+  } else if (iWin == true && heWins == false) {
+    console.log("You lose", x);
+  }
+});
 
 
 
