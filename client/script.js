@@ -33,14 +33,28 @@ socket.on("switchTurn", () => {
   myTurn = !myTurn;
   switchTurns();
 });
-socket.on("winORlose", (iWin, heWins, x) => {
-  if (iWin == false && heWins == true) {
-    console.log("You win", x);
-  } else if (iWin == true && heWins == false) {
-    console.log("You lose", x);
-  }
-});
 
+
+
+
+socket.on("Win", () => {
+  console.log("You Win!");
+})
+
+socket.on("Lose", () => {
+  console.log("You Lose!");
+})
+
+
+function renderWin() {
+  
+}
+
+
+function renderGameOver() {
+  $("#draw").attr("disabled", true);
+  $("#messages").text("Game Over!");
+}
 
 
 

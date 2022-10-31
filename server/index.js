@@ -79,8 +79,9 @@ function getOpponent(socket) {
 
 
 
-const deck = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-let CopyDeck = deck;
+const deck = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
+
+
 function shuffle(array) {
     let currentIndex = array.length,  randomIndex;
   
@@ -98,26 +99,32 @@ function shuffle(array) {
   
     return array;
 }
-shuffle(CopyDeck);
 
 
-let player1deck = CopyDeck.splice(0, 5);
-let player2deck = CopyDeck.splice(0, 5);
+const middleIndex = Math.ceil(deck.length / 2);
+
+
+
+
+
+
 
 
 let isPlayer1 = true;
 
-let isPlayer1turn = false;
 
-let player1wins = false;
-let player2wins = false;
-let player1turn = 0;
-let player2turn = 0;
+let i = 1;
 let x = 0;
+
 
 io.on("connection", function(socket) {
     joinGame(socket);
-    x = 0;
+
+    
+    let MixedDeck = shuffle(deck);
+    let player1deck = MixedDeck.slice().splice(0, middleIndex);
+    let player2deck = MixedDeck.slice().splice(-middleIndex);
+    
 
 
 
@@ -127,45 +134,47 @@ if (getOpponent(socket)) {
 }
 
     
-    socket.on("move", (isPlayer1, deck) => {
+    socket.on("move", (isPlayer1, PlayerDeck) => {
+        
+        i++;
+
+        if ((i + 1) % 2 == 0) {
+            checkWin(isPlayer1, PlayerDeck);
+            x++;
+        }
+        // switch round
+        socket.emit("switchTurn"); //second players
+        getOpponent(socket).emit("switchTurn"); // first player
+    });
+
+
+    function checkWin(isPlayer1, PlayerDeck) {
         if (isPlayer1 == true) {
-           if (deck[x] > player2deck[x]) {
-                player1wins = true;
-                player2wins = false;
-           } else {
-               player1wins = false;
-               player2wins = true;
-           }
-        } else if (isPlayer1 == false) {
-            if (deck[x] > player1deck[x]) {
-                player1wins = false;
-                player2wins = true;
-            } else {
-                player1wins = true;
-                player2wins = false;
+            // player 1
+            if (PlayerDeck[x] > player2deck[x]) {
+                console.log("player 1 wins");
+                getOpponent(socket).emit("Win"); // player 1
+                socket.emit("Lose"); // player 2
+
+            } else if (PlayerDeck[x] < player2deck[x]) {
+                console.log("player 2 wins");
+                getOpponent(socket).emit("Lose"); // player 1
+                socket.emit("Win"); // player 2
+            }
+        } else {
+            // player 2
+            if (PlayerDeck[x] > player1deck[x]) {
+                console.log("player 2 wins");
+                getOpponent(socket).emit("Lose"); // player 1
+                socket.emit("Win"); // player 2
+
+            } else if (PlayerDeck[x] < player1deck[x]) {
+                console.log("player 1 wins");
+                getOpponent(socket).emit("Win"); // player 1
+                socket.emit("Lose"); // player 2
             }
         }
+    }
 
-
-        if (getOpponent(socket)) {
-            socket.emit("switchTurn"); //second player
-            socket.emit("winORlose", player2wins, player1wins, x);
-            console.log(player1wins, player2wins);
-            
-            getOpponent(socket).emit("switchTurn"); // first player
-            getOpponent(socket).emit("winORlose", player1wins, player2wins, x);
-        }
-        x++;
-    });
     
-
-
-
-
-
-
-
-
-
 });
-  
