@@ -37,12 +37,16 @@ socket.on("switchTurn", () => {
 
 
 
-socket.on("Win", () => {
+socket.on("Win", (UpdatedDeck) => {
+  Deck = UpdatedDeck;
   console.log("You Win!");
+  console.log("Updated deck", Deck);
 })
 
-socket.on("Lose", () => {
+socket.on("Lose", (UpdatedDeck) => {
+  Deck = UpdatedDeck;
   console.log("You Lose!");
+  console.log("Updated deck", Deck);
 })
 
 
