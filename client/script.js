@@ -40,13 +40,13 @@ socket.on("switchTurn", () => {
 socket.on("Win", (UpdatedDeck) => {
   Deck = UpdatedDeck;
   console.log("You Win!");
-  console.log("Updated deck", Deck);
+  console.log(Deck);
 })
 
 socket.on("Lose", (UpdatedDeck) => {
   Deck = UpdatedDeck;
   console.log("You Lose!");
-  console.log("Updated deck", Deck);
+  console.log(Deck);
 })
 
 

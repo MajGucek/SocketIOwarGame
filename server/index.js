@@ -76,10 +76,39 @@ function getOpponent(socket) {
     
 }
 
+const H2 = {value: 2};
+const H3 = {value: 3};
+const H4 = {value: 4};
+const H5 = {value: 5};
+const H6 = {value: 6};
+const H7 = {value: 7};
+const H8 = {value: 8};
+const H9 = {value: 9};
+const H10 = {value: 10};
+const HJ = {value: 11};
+const HQ = {value: 12};
+const HK = {value: 13};
+const HA = {value: 14};
+
+const S2 = {value: 2};
+const S3 = {value: 3};
+const S4 = {value: 4};
+const S5 = {value: 5};
+const S6 = {value: 6};
+const S7 = {value: 7};
+const S8 = {value: 8};
+const S9 = {value: 9};
+const S10 = {value: 10};
+const SJ = {value: 11};
+const SQ = {value: 12};
+const SK = {value: 13};
+const SA = {value: 14};
 
 
 
-const deck = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
+
+
+const deck = [];
 
 
 function shuffle(array) {
@@ -160,27 +189,27 @@ if (getOpponent(socket)) {
 
                 // player 1
                 player1deck.push(player1deck.shift());
-                //player1deck.push(player2deck[x]);
+                player1deck.push(player2deck[n]);
                 getOpponent(socket).emit("Win", player1deck);
 
                 // player 2
-                player2deck.push(player2deck.shift());
-                //player2deck.splice(x, 1);
+                player2deck.splice(n, 1);
                 socket.emit("Lose", player2deck); 
 
             } else if (PlayerDeck[n] < player2deck[n] && (player2deck[n] != undefined || player2deck[n] != null)) {
 
                 console.log("player 2 wins");
 
-                // player 1+
-                player1deck.push(player1deck.shift());
-                //player1deck.splice(x, 1);
-                getOpponent(socket).emit("Lose", player1deck);
-                
                 // player 2
                 player2deck.push(player2deck.shift());
-                //player2deck.push(player1deck[x]);
-                socket.emit("Win", player2deck); 
+                player2deck.push(player1deck[n]);
+                socket.emit("Win", player2deck);
+
+                // player 1
+                player1deck.splice(n, 1);
+                getOpponent(socket).emit("Lose", player1deck);
+                
+                 
             }
         } else {
             // player 2
@@ -188,15 +217,16 @@ if (getOpponent(socket)) {
 
                 console.log("player 2 wins");
 
-                // player 1
-                player1deck.push(player1deck.shift());
-                //player1deck.splice(x, 1);
-                getOpponent(socket).emit("Lose", player1deck); 
-
                 // player 2
                 player2deck.push(player2deck.shift());
-                //player2deck.push(player1deck[x]);
-                socket.emit("Win", player2deck); 
+                player2deck.push(player1deck[n]);
+                socket.emit("Win", player2deck);
+
+                // player 1
+                player1deck.splice(n, 1);
+                getOpponent(socket).emit("Lose", player1deck); 
+
+                 
 
             } else if (PlayerDeck[n] < player1deck[n] && (player1deck[n] != undefined || player1deck[n] != null)) {
 
@@ -204,12 +234,11 @@ if (getOpponent(socket)) {
 
                 // player 1
                 player1deck.push(player1deck.shift());
-                //player1deck.push(player2deck[x]);
+                player1deck.push(player2deck[n]);
                 getOpponent(socket).emit("Win", player1deck); 
 
                 // player 2
-                player2deck.push(player2deck.shift());
-                //player2deck.splice(x, 1);
+                player2deck.splice(n, 1);
                 socket.emit("Lose", player2deck); 
             }
         }
