@@ -4,6 +4,7 @@ const draw = document.getElementById("draw");
 let amPlayer1;
 let myTurn;
 let Deck;
+let OpponentsCard;
 
 
 socket.on("game.begin", (isPlayer1, deck) => {
@@ -34,19 +35,28 @@ socket.on("switchTurn", () => {
   switchTurns();
 });
 
-
+socket.on("OpponentsCardYouWonToo", (Card) => {
+  OpponentsCard = Card;
+});
+socket.on("OpponentsCardYouLostToo", (Card) => {
+  OpponentsCard = Card;
+})
 
 
 socket.on("Win", (UpdatedDeck) => {
-  Deck = UpdatedDeck;
   console.log("You Win!");
-  console.log(Deck);
+  console.log(Deck[0].name, "Was higher than", OpponentsCard.name);
+  // renderWin();
+  Deck = UpdatedDeck;
+  console.log("Updated deck", Deck);
 })
 
 socket.on("Lose", (UpdatedDeck) => {
-  Deck = UpdatedDeck;
   console.log("You Lose!");
-  console.log(Deck);
+  console.log(Deck[0].name, "Was lower than", OpponentsCard.name);
+  // renderLose();
+  Deck = UpdatedDeck;
+  console.log("Updated deck", Deck);
 })
 
 
