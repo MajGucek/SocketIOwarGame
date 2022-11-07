@@ -54,7 +54,7 @@ socket.on("Win", (UpdatedDeck) => {
   console.log("Updated deck", Deck);
 
   currentCard.innerHTML = Deck[0].name;
-  PossibleWarCard.innerHTML = Deck[4].name;
+  PossibleWarCard.innerHTML = Deck[4].name; 
 })
 
 socket.on("Lose", (UpdatedDeck) => {
