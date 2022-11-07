@@ -1,6 +1,8 @@
 const url = window.location.origin
 let socket = io.connect(url);
 const draw = document.getElementById("draw");
+const currentCard = document.getElementById("CurrentCard");
+const PossibleWarCard = document.getElementById("WarCard");
 let amPlayer1;
 let myTurn;
 let Deck;
@@ -14,7 +16,8 @@ socket.on("game.begin", (isPlayer1, deck) => {
   amPlayer1 = isPlayer1;
   myTurn = isPlayer1;
 
-
+  currentCard.innerHTML = Deck[0].name;
+  PossibleWarCard.innerHTML = Deck[4].name;
 
   switchTurns();
 
@@ -49,6 +52,9 @@ socket.on("Win", (UpdatedDeck) => {
   // renderWin();
   Deck = UpdatedDeck;
   console.log("Updated deck", Deck);
+
+  currentCard.innerHTML = Deck[0].name;
+  PossibleWarCard.innerHTML = Deck[4].name;
 })
 
 socket.on("Lose", (UpdatedDeck) => {
@@ -57,7 +63,34 @@ socket.on("Lose", (UpdatedDeck) => {
   // renderLose();
   Deck = UpdatedDeck;
   console.log("Updated deck", Deck);
+  
+  currentCard.innerHTML = Deck[0].name;
+  PossibleWarCard.innerHTML = Deck[4].name;
 })
+
+socket.on("YouWinWar", (UpdatedDeck) => {
+  console.log("You Win the War!");
+  console.log(Deck[4].name, "was higher than opponents card");
+  // renderWarWin();
+  Deck = UpdatedDeck;
+  console.log("Updated deck", Deck);
+
+  currentCard.innerHTML = Deck[0].name;
+  PossibleWarCard.innerHTML = Deck[4].name;
+})
+
+socket.on("YouLoseWar", (UpdatedDeck) => {
+  console.log("You lose the War!");
+  console.log(Deck[4].name, "was lower than opponents card");
+  // renderWarlose();
+  Deck = UpdatedDeck;
+  console.log("Updated deck", Deck);
+
+  currentCard.innerHTML = Deck[0].name;
+  PossibleWarCard.innerHTML = Deck[4].name;
+})
+
+
 
 
 function renderWin() {

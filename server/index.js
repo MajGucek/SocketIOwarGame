@@ -229,8 +229,9 @@ let isPlayer1 = true;
 let i = 1;
 // array number to compare to
 let n = 0;
-// copied number
-let cn = undefined;
+
+let p1BeforeUpdateCard = undefined;
+let p2BeforeUpdateCard = undefined;
 
 io.on("connection", function(socket) {
     joinGame(socket);
@@ -271,11 +272,10 @@ if (getOpponent(socket)) {
                 console.log("WAR");
                 // place additional 3 cards face down
                 // place a fourth card face up 
-                // compare the fourth card
+                // compare the fifth card in total
                 if (PlayerDeck[4].value > player2deck[4].value && (player2deck[n].value != undefined || player2deck[n].value != null)) {
-                    // winner takes in total 10 cards
+                    // winner takes 5 cards from opponent
                     // five of his own go to the back
-                    // and five of his opponets go to the back
                     // 5 times (use for loop)
                     player1deck.push(player1deck.shift());
                     player1deck.push(player1deck.shift());
@@ -283,9 +283,17 @@ if (getOpponent(socket)) {
                     player1deck.push(player1deck.shift());
                     player1deck.push(player1deck.shift());
                     // 
+                    // and five of his opponets go to the back
+                    player1deck.push(player2deck[0]);
+                    player1deck.push(player2deck[1]);
+                    player1deck.push(player2deck[2]);
+                    player1deck.push(player2deck[3]);
+                    player1deck.push(player2deck[4]);
 
-                    player1deck.push(player2deck[0, 1, 2, 3, 4]);
                     player2deck.splice(0, 5);
+
+                    getOpponent(socket).emit("YouWinWar", player1deck); // player 1
+                    socket.emit("YouLoseWar", player2deck); // player 2
 
                 } else if (PlayerDeck[4].value < player2deck[4].value && (player2deck[n].value != undefined || player2deck[n].value != null)) {
                     // 5 times
@@ -296,8 +304,16 @@ if (getOpponent(socket)) {
                     player2deck.push(player2deck.shift());
                     // 
                     
-                    player2deck.push(player1deck[0, 1, 2, 3, 4]);
+                    player2deck.push(player1deck[0]);
+                    player2deck.push(player1deck[1]);
+                    player2deck.push(player1deck[2]);
+                    player2deck.push(player1deck[3]);
+                    player2deck.push(player1deck[4]);
+
                     player1deck.splice(0, 5);
+
+                    getOpponent(socket).emit("YouLoseWar", player1deck); // player 1
+                    socket.emit("YouWinWar", player2deck); // player 2
                 }
                 
                 
@@ -308,6 +324,7 @@ if (getOpponent(socket)) {
                 console.log("player 1 wins");
 
                 // player 1 before deck changes
+                p2BeforeUpdateCard = player2deck[n];
                 getOpponent(socket).emit("OpponentsCardYouWonToo", player2deck[n]);
                 // player 2 before deck changes
                 socket.emit("OpponentsCardYouLostToo", player1deck[n]);
@@ -315,11 +332,12 @@ if (getOpponent(socket)) {
                 // player 1
                 player1deck.push(player1deck.shift());
                 player1deck.push(player2deck[n]);
-                getOpponent(socket).emit("Win", player1deck);
+                getOpponent(socket).emit("Win", player1deck, player2deck[n]);
 
                 // player 2
                 player2deck.splice(n, 1);
-                socket.emit("Lose", player2deck); 
+
+                socket.emit("Lose", player2deck, player1deck[n]); 
 
             } else if (PlayerDeck[n].value < player2deck[n].value && (player2deck[n].value != undefined || player2deck[n].value != null)) {
 
@@ -333,6 +351,7 @@ if (getOpponent(socket)) {
                 // player 2
                 player2deck.push(player2deck.shift());
                 player2deck.push(player1deck[n]);
+
                 socket.emit("Win", player2deck);
 
                 // player 1
@@ -344,6 +363,52 @@ if (getOpponent(socket)) {
             if (PlayerDeck[n].value == player1deck[n].value && (player1deck[n].value != undefined || player1deck[n].value != null)) {
                 // WAR
                 console.log("WAR");
+
+                if (PlayerDeck[4].value > player1deck[4].value && (player1deck[n].value != undefined || player1deck[n].value != null)) {
+                    // winner takes in total 10 cards
+                    // five of his own go to the back
+                    // and five of his opponets go to the back
+                    // 5 times (use for loop)
+                    player2deck.push(player2deck.shift());
+                    player2deck.push(player2deck.shift());
+                    player2deck.push(player2deck.shift());
+                    player2deck.push(player2deck.shift());
+                    player2deck.push(player2deck.shift());
+                    // 
+
+                    player2deck.push(player1deck[0]);
+                    player2deck.push(player1deck[1]);
+                    player2deck.push(player1deck[2]);
+                    player2deck.push(player1deck[3]);
+                    player2deck.push(player1deck[4]);
+
+                    player1deck.splice(0, 5);
+
+                    getOpponent(socket).emit("YouLoseWar", player1deck); // player 1
+                    socket.emit("YouWinWar", player2deck); // player 2
+
+                } else if (PlayerDeck[4].value < player1deck[4].value && (player1deck[n].value != undefined || player1deck[n].value != null)) {
+                    // 5 times
+                    player1deck.push(player1deck.shift());
+                    player1deck.push(player1deck.shift());
+                    player1deck.push(player1deck.shift());
+                    player1deck.push(player1deck.shift());
+                    player1deck.push(player1deck.shift());
+                    // 
+                    
+                    player1deck.push(player2deck[0]);
+                    player1deck.push(player2deck[1]);
+                    player1deck.push(player2deck[2]);
+                    player1deck.push(player2deck[3]);
+                    player1deck.push(player2deck[4]);
+
+                    player2deck.splice(0, 5);
+
+                    getOpponent(socket).emit("YouWinWar", player1deck); // player 1
+                    socket.emit("YouLoseWar", player2deck); // player 2
+                }
+
+
             } else if (PlayerDeck[n].value > player1deck[n].value && (player1deck[n].value != undefined || player1deck[n].value != null)) {
 
                 console.log("player 2 wins");
@@ -357,6 +422,7 @@ if (getOpponent(socket)) {
                 // player 2
                 player2deck.push(player2deck.shift());
                 player2deck.push(player1deck[n]);
+
                 socket.emit("Win", player2deck);
 
                 // player 1
