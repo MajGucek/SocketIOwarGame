@@ -405,7 +405,7 @@ if (getOpponent(socket)) {
                     player2deck.splice(0, 5);
 
                     getOpponent(socket).emit("YouWinWar", player1deck); // player 1
-                    socket.emit("YouLoseWar", player2deck); // player 2
+                    socket.emit("YouLoseWar", player2deck); // player 2 
                 }
 
 
