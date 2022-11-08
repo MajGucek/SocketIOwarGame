@@ -251,6 +251,16 @@ if (getOpponent(socket)) {
 
     
     socket.on("move", (isPlayer1, PlayerDeck) => {
+        if (player1deck.length == 0) {
+            getOpponent(socket).emit("GameOverLost");
+            socket.emit("GameOverWon");
+        }
+        if (player2deck.length == 0) {
+            getOpponent(socket).emit("GameOverWon");
+            socket.emit("GameOverLost");
+        }
+
+
         
         i++;
 
@@ -270,10 +280,15 @@ if (getOpponent(socket)) {
             if (PlayerDeck[n].value == player2deck[n].value && (player2deck[n].value != undefined || player2deck[n].value != null)) {
                 // WAR
                 console.log("WAR");
+                
                 // place additional 3 cards face down
                 // place a fourth card face up 
                 // compare the fifth card in total
                 if (PlayerDeck[4].value > player2deck[4].value && (player2deck[n].value != undefined || player2deck[n].value != null)) {
+                    console.log("Player 1 Wins the WAR");
+
+                    getOpponent(socket).emit("OpponentsWarCardYouWonToo", player2deck[4]);
+                    socket.emit("OpponentsWarCardYouLostToo", player1deck[4]);
                     // winner takes 5 cards from opponent
                     // five of his own go to the back
                     // 5 times (use for loop)
@@ -296,6 +311,10 @@ if (getOpponent(socket)) {
                     socket.emit("YouLoseWar", player2deck); // player 2
 
                 } else if (PlayerDeck[4].value < player2deck[4].value && (player2deck[n].value != undefined || player2deck[n].value != null)) {
+                    console.log("Player 2 Wins the WAR");
+
+                    getOpponent(socket).emit("OpponentsWarCardYouLostToo", player2deck[4]);
+                    socket.emit("OpponentsWarCardYouWonToo", player1deck[4]);
                     // 5 times
                     player2deck.push(player2deck.shift());
                     player2deck.push(player2deck.shift());
@@ -365,6 +384,10 @@ if (getOpponent(socket)) {
                 console.log("WAR");
 
                 if (PlayerDeck[4].value > player1deck[4].value && (player1deck[n].value != undefined || player1deck[n].value != null)) {
+                    console.log("Player 2 Wins the WAR");
+
+                    getOpponent(socket).emit("OpponentsWarCardYouLostToo", player2deck[4]);
+                    socket.emit("OpponentsWarCardYouWonToo", player1deck[4]);
                     // winner takes in total 10 cards
                     // five of his own go to the back
                     // and five of his opponets go to the back
@@ -388,6 +411,10 @@ if (getOpponent(socket)) {
                     socket.emit("YouWinWar", player2deck); // player 2
 
                 } else if (PlayerDeck[4].value < player1deck[4].value && (player1deck[n].value != undefined || player1deck[n].value != null)) {
+                    console.log("Player 1 Wins the WAR");
+
+                    getOpponent(socket).emit("OpponentsWarCardYouWonToo", player2deck[4]);
+                    socket.emit("OpponentsWarCardYouLostToo", player1deck[4]);
                     // 5 times
                     player1deck.push(player1deck.shift());
                     player1deck.push(player1deck.shift());

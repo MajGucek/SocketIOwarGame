@@ -7,6 +7,7 @@ let amPlayer1;
 let myTurn;
 let Deck;
 let OpponentsCard;
+let OpponentsWarCard;
 
 
 socket.on("game.begin", (isPlayer1, deck) => {
@@ -15,16 +16,9 @@ socket.on("game.begin", (isPlayer1, deck) => {
   document.getElementById("joined").innerHTML = "Opponent Joined";
   amPlayer1 = isPlayer1;
   myTurn = isPlayer1;
-
-  currentCard.innerHTML = Deck[0].name;
-  PossibleWarCard.innerHTML = Deck[4].name;
-
+  displayUpdatedCards();
   switchTurns();
-
   console.log(Deck);
-
-
-
 });
 
 
@@ -38,71 +32,91 @@ socket.on("switchTurn", () => {
   switchTurns();
 });
 
+
 socket.on("OpponentsCardYouWonToo", (Card) => {
   OpponentsCard = Card;
 });
 socket.on("OpponentsCardYouLostToo", (Card) => {
   OpponentsCard = Card;
-})
+});
 
+
+
+
+function displayUpdatedCards() {
+  currentCard.innerHTML = `Current card: ${Deck[0].name}`;
+  PossibleWarCard.innerHTML = `Possible War Card: ${Deck[4].name}`;
+}
 
 socket.on("Win", (UpdatedDeck) => {
   console.log("You Win!");
   console.log(Deck[0].name, "Was higher than", OpponentsCard.name);
-  // renderWin();
+  renderWin();
   Deck = UpdatedDeck;
   console.log("Updated deck", Deck);
 
-  currentCard.innerHTML = Deck[0].name;
-  PossibleWarCard.innerHTML = Deck[4].name; 
+  displayUpdatedCards();
 })
 
 socket.on("Lose", (UpdatedDeck) => {
   console.log("You Lose!");
   console.log(Deck[0].name, "Was lower than", OpponentsCard.name);
-  // renderLose();
+  renderLose();
   Deck = UpdatedDeck;
   console.log("Updated deck", Deck);
   
-  currentCard.innerHTML = Deck[0].name;
-  PossibleWarCard.innerHTML = Deck[4].name;
+  displayUpdatedCards();
 })
 
 socket.on("YouWinWar", (UpdatedDeck) => {
   console.log("You Win the War!");
-  console.log(Deck[4].name, "was higher than opponents card");
+  console.log(Deck[4].name, "was higher than");
   // renderWarWin();
   Deck = UpdatedDeck;
   console.log("Updated deck", Deck);
 
-  currentCard.innerHTML = Deck[0].name;
-  PossibleWarCard.innerHTML = Deck[4].name;
+  displayUpdatedCards();
 })
 
 socket.on("YouLoseWar", (UpdatedDeck) => {
   console.log("You lose the War!");
-  console.log(Deck[4].name, "was lower than opponents card");
+  console.log(Deck[4].name, "was lower than");
   // renderWarlose();
   Deck = UpdatedDeck;
   console.log("Updated deck", Deck);
 
-  currentCard.innerHTML = Deck[0].name;
-  PossibleWarCard.innerHTML = Deck[4].name;
+  displayUpdatedCards();
 })
 
 
 
+socket.on("GameOverWon", () => {
+  renderGameWin();
+})
+socket.on("GameOverLost", () => {
+  renderGameLose();
+})
+
+
+function renderGameWin() {
+  $("#messages").text("You Win The Game!");
+  $("#draw").attr("disabled", true);
+  $("#CurrentCard").text("");
+  $("#WarCard").text("");
+}
+function renderGameLose() {
+  $("#messages").text("You Lose The Game!");
+  $("#draw").attr("disabled", true);
+  $("#CurrentCard").text("");
+  $("#WarCard").text("");
+}
 
 function renderWin() {
-  
+  $("joined").text("You Win the Duel!");
 }
-
-
-function renderGameOver() {
-  $("#draw").attr("disabled", true);
-  $("#messages").text("Game Over!");
+function renderLose() {
+  $("joined").text("You Lose the Duel!");
 }
-
 
 
 function switchTurns() {
