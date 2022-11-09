@@ -1,8 +1,16 @@
 const url = window.location.origin
 let socket = io.connect(url);
+
 const draw = document.getElementById("draw");
 const currentCard = document.getElementById("CurrentCard");
 const PossibleWarCard = document.getElementById("WarCard");
+const placeholderTextField = document.getElementById("placeholderTextField");
+const TextField = document.getElementById("TextField");
+const submitButton = document.getElementById("SubmitButton");
+const opponentName = document.getElementById("opponentName");
+const FindOpponent = document.getElementById("FindOpponent");
+let InputedText;
+
 let amPlayer1;
 let myTurn;
 let Deck;
@@ -10,27 +18,53 @@ let OpponentsCard;
 let OpponentsWarCard;
 
 
+FindOpponent.onclick = () => {
+  window.location.reload();
+}
+
+
+submitButton.disabled = true;
+draw.disabled = true;
+
+submitButton.onclick = () => {
+  submitButton.disabled = true;
+  socket.emit("Name", TextField.value);
+}
+
+socket.on("OpponentsName", (OpponentsName) => {
+  opponentName.innerHTML = `You're playing against: ${OpponentsName}`;
+});
+
+
+
 socket.on("game.begin", (isPlayer1, deck) => {
   // is opponent exprected to be false if refreshed first
   Deck = deck;
-  document.getElementById("joined").innerHTML = "Opponent Joined";
+  draw.disabled = false;
+  submitButton.disabled = false;
+  document.getElementById("joined").innerHTML = "Opponent Found";
   amPlayer1 = isPlayer1;
   myTurn = isPlayer1;
-  displayUpdatedCards();
+
+  currentCard.innerHTML = `Current card: ${Deck[0].name}`;
+  PossibleWarCard.innerHTML = `Possible War Card: ${Deck[4].name}`;
+
+
   switchTurns();
   console.log(Deck);
 });
+
 
 
 draw.onclick = () => {
   socket.emit("move", amPlayer1, Deck);
   $("#draw").attr("disabled", true);
 }
-
 socket.on("switchTurn", () => {
   myTurn = !myTurn;
   switchTurns();
 });
+
 
 
 socket.on("OpponentsCardYouWonToo", (Card) => {
@@ -39,7 +73,12 @@ socket.on("OpponentsCardYouWonToo", (Card) => {
 socket.on("OpponentsCardYouLostToo", (Card) => {
   OpponentsCard = Card;
 });
-
+socket.on("OpponentsWarCardYouWonToo", (Card) => {
+  OpponentsWarCard = Card;
+});
+socket.on("OpponentsWarCardYouLostToo", (Card) => {
+  OpponentsWarCard = Card;
+});
 
 
 
@@ -48,44 +87,51 @@ function displayUpdatedCards() {
   PossibleWarCard.innerHTML = `Possible War Card: ${Deck[4].name}`;
 }
 
+function updateDeck(updateddeck) {
+  Deck = updateddeck;
+  console.log("Updated Deck", Deck);
+}
+
 socket.on("Win", (UpdatedDeck) => {
   console.log("You Win!");
   console.log(Deck[0].name, "Was higher than", OpponentsCard.name);
   renderWin();
-  Deck = UpdatedDeck;
-  console.log("Updated deck", Deck);
 
-  displayUpdatedCards();
+  updateDeck(UpdatedDeck);
+
+  currentCard.innerHTML = `Current card: ${Deck[0].name}`;
+  PossibleWarCard.innerHTML = `Possible War Card: ${Deck[4].name}`;
 })
 
 socket.on("Lose", (UpdatedDeck) => {
   console.log("You Lose!");
   console.log(Deck[0].name, "Was lower than", OpponentsCard.name);
   renderLose();
-  Deck = UpdatedDeck;
-  console.log("Updated deck", Deck);
+
+  updateDeck(UpdatedDeck);
   
-  displayUpdatedCards();
+  currentCard.innerHTML = `Current card: ${Deck[0].name}`;
+  PossibleWarCard.innerHTML = `Possible War Card: ${Deck[4].name}`;
 })
 
 socket.on("YouWinWar", (UpdatedDeck) => {
   console.log("You Win the War!");
-  console.log(Deck[4].name, "was higher than");
+  console.log(Deck[4].name, "was higher than", OpponentsWarCard.name);
   // renderWarWin();
-  Deck = UpdatedDeck;
-  console.log("Updated deck", Deck);
+  updateDeck(UpdatedDeck);
 
-  displayUpdatedCards();
+  currentCard.innerHTML = `Current card: ${Deck[0].name}`;
+  PossibleWarCard.innerHTML = `Possible War Card: ${Deck[4].name}`;
 })
 
 socket.on("YouLoseWar", (UpdatedDeck) => {
   console.log("You lose the War!");
-  console.log(Deck[4].name, "was lower than");
+  console.log(Deck[4].name, "was lower than", OpponentsWarCard.name);
   // renderWarlose();
-  Deck = UpdatedDeck;
-  console.log("Updated deck", Deck);
+  updateDeck(UpdatedDeck);
 
-  displayUpdatedCards();
+  currentCard.innerHTML = `Current card: ${Deck[0].name}`;
+  PossibleWarCard.innerHTML = `Possible War Card: ${Deck[4].name}`;
 })
 
 
@@ -142,7 +188,6 @@ socket.on("clientdisconnect", (id) => {
   console.log(`${id} disconnected!`);
   $("#draw").attr("disabled", true);
   $("#messages").text("Your opponent left");
-  window.location.reload(); 
 });
 
 
