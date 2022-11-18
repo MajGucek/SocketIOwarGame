@@ -18,10 +18,16 @@ app.get("/", (req, res) => {
     stream.pipe(res);
 })
 
+
+
 const addClient = socket => {
     console.log("New client", socket.id);
     clients[socket.id] = socket;
+    
 };
+
+
+
 const removeClient = socket => {
     console.log("Client disconnected", socket.id);
     delete clients[socket.id];
@@ -29,8 +35,10 @@ const removeClient = socket => {
 
 io.on("connection", socket => {
     let id = socket.id;
+
   
     addClient(socket);
+
   
     socket.on("mousemove", data => {
       data.id = id;
@@ -75,6 +83,7 @@ function getOpponent(socket) {
 
     
 }
+
 
 const H2 = {value: 2, name: "Heart 2"};
 const H3 = {value: 3, name: "Heart 3"};
@@ -224,6 +233,7 @@ let n = 0;
 
 
 
+
 let MixedDeck, player1deck, player2deck;
 
 
@@ -243,17 +253,26 @@ io.on("connection", function(socket) {
     splitDeck();
 
 
+    if (getOpponent(socket)) {
+        
+    }
+
+
+
 
     socket.on("Name", (name) => {
         sendName(socket, name);
+        hasSubmittedName++;
     });
 
     
+
 
     if (getOpponent(socket)) {
         socket.emit("game.begin", !isPlayer1, player2deck); // second player
         getOpponent(socket).emit("game.begin", isPlayer1, player1deck); //first player
     }
+
         
 
 
