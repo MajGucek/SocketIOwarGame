@@ -3,12 +3,19 @@ let socket = io.connect(url);
 
 const draw = document.getElementById("draw");
 const currentCard = document.getElementById("CurrentCard");
-const PossibleWarCard = document.getElementById("WarCard");
+
 const placeholderTextField = document.getElementById("placeholderTextField");
 const TextField = document.getElementById("TextField");
 const submitButton = document.getElementById("SubmitButton");
 const opponentName = document.getElementById("opponentName");
 const FindOpponent = document.getElementById("FindOpponent");
+
+
+
+
+const flipCard = document.getElementsByClassName("flip-card");
+const CardText = document.getElementById("text");
+
 let InputedText;
 
 let amPlayer1;
@@ -26,6 +33,10 @@ FindOpponent.onclick = () => {
 submitButton.disabled = true;
 draw.disabled = true;
 
+
+
+
+
 submitButton.onclick = () => {
   submitButton.disabled = true;
   socket.emit("Name", TextField.value);
@@ -37,17 +48,24 @@ socket.on("OpponentsName", (OpponentsName) => {
 
 
 
+
 socket.on("game.begin", (isPlayer1, deck) => {
   // is opponent exprected to be false if refreshed first
   Deck = deck;
   draw.disabled = false;
   submitButton.disabled = false;
+  
   document.getElementById("joined").innerHTML = "Opponent Found";
   amPlayer1 = isPlayer1;
   myTurn = isPlayer1;
 
-  currentCard.innerHTML = `Current card: ${Deck[0].name}`;
-  PossibleWarCard.innerHTML = `Possible War Card: ${Deck[4].name}`;
+
+  draw.innerHTML = Deck[0].name;
+
+
+
+
+
 
 
   switchTurns();
@@ -58,7 +76,9 @@ socket.on("game.begin", (isPlayer1, deck) => {
 
 draw.onclick = () => {
   socket.emit("move", amPlayer1, Deck);
-  $("#draw").attr("disabled", true);
+  CardText.style.pointerEvents = "none";
+
+
 }
 socket.on("switchTurn", () => {
   myTurn = !myTurn;
@@ -83,8 +103,7 @@ socket.on("OpponentsWarCardYouLostToo", (Card) => {
 
 
 function displayUpdatedCards() {
-  currentCard.innerHTML = `Current card: ${Deck[0].name}`;
-  PossibleWarCard.innerHTML = `Possible War Card: ${Deck[4].name}`;
+  draw.innerHTML = Deck[0].name;
 }
 
 function updateDeck(updateddeck) {
@@ -99,7 +118,7 @@ socket.on("Win", (UpdatedDeck) => {
 
   updateDeck(UpdatedDeck);
 
-  currentCard.innerHTML = `Current card: ${Deck[0].name}`;
+  displayUpdatedCards();
   PossibleWarCard.innerHTML = `Possible War Card: ${Deck[4].name}`;
 })
 
@@ -110,7 +129,7 @@ socket.on("Lose", (UpdatedDeck) => {
 
   updateDeck(UpdatedDeck);
   
-  currentCard.innerHTML = `Current card: ${Deck[0].name}`;
+  displayUpdatedCards();
   PossibleWarCard.innerHTML = `Possible War Card: ${Deck[4].name}`;
 })
 
@@ -120,7 +139,7 @@ socket.on("YouWinWar", (UpdatedDeck) => {
   // renderWarWin();
   updateDeck(UpdatedDeck);
 
-  currentCard.innerHTML = `Current card: ${Deck[0].name}`;
+  displayUpdatedCards();
   PossibleWarCard.innerHTML = `Possible War Card: ${Deck[4].name}`;
 })
 
@@ -130,7 +149,7 @@ socket.on("YouLoseWar", (UpdatedDeck) => {
   // renderWarlose();
   updateDeck(UpdatedDeck);
 
-  currentCard.innerHTML = `Current card: ${Deck[0].name}`;
+  displayUpdatedCards();
   PossibleWarCard.innerHTML = `Possible War Card: ${Deck[4].name}`;
 })
 

@@ -31,19 +31,43 @@ body {
 </head>
 <body>
 
-<div class="board">
-    <button id="draw" onclick="onDraw()" disabled="disabled">Draw A Card</button>
-</div>
 <div id="messages">Messages</div>
 <div id="joined">Waiting for opponent to join...</div>
-<div id="CurrentCard">Current Card</div>
-<div id="WarCard">Possible War Card</div>  
+
+<div id="space1"></div>
+
+
+
 
 
 <input id="TextField" type="text" name="text" placeholder="Input Name"/>
 <button id="SubmitButton">Submit Name</button>
+
+<div id="space"></div>
+
 <div id="opponentName">You Opponents Name</div>
 <button id="FindOpponent">Find Opponent</button>
+
+<div id="space2"></div>
+
+
+
+<div id="backcard0"></div>
+<div id="backcard1"></div>
+<div id="backcard2"></div>
+
+<div class="flip-card">
+    <div class="flip-card-inner">
+      <div class="flip-card-front">
+        
+      </div>
+      <div class="flip-card-back">
+        <button id="draw" onclick="onDraw()" disabled="disabled">Draw A Card</button>
+        <div id="text"></div>
+        
+      </div>
+    </div>
+  </div>
 
 
   
