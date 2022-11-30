@@ -3,12 +3,16 @@ let socket = io.connect(url);
 
 const draw = document.getElementById("draw");
 const currentCard = document.getElementById("CurrentCard");
+const Messages = document.getElementById("messages");
 
 const placeholderTextField = document.getElementById("placeholderTextField");
 const TextField = document.getElementById("TextField");
 const submitButton = document.getElementById("SubmitButton");
 const opponentName = document.getElementById("opponentName");
 const FindOpponent = document.getElementById("FindOpponent");
+const pass = document.getElementById("pass");
+const SubmitPassword = document.getElementById("SubmitPass");
+const PasswordField = document.getElementById("PasswordField");
 
 
 
@@ -32,14 +36,28 @@ FindOpponent.onclick = () => {
 
 submitButton.disabled = true;
 draw.disabled = true;
+SubmitPassword.disabled = true;
 
 
+socket.on("password", (password) => {
+  pass.innerHTML = `Share this to your Opponent: ${password}`;
+});
 
+socket.on("PasswordReq", () => {
+  pass.innerHTML = `Input your Password`;   
+  SubmitPassword.disabled = false;
+});
+
+SubmitPassword.onclick = () => {
+  console.log(PasswordField.value);
+  socket.emit("PasswordRes", PasswordField.value);
+}
 
 
 submitButton.onclick = () => {
-  submitButton.disabled = true;
   socket.emit("Name", TextField.value);
+  submitButton.remove();
+  TextField.remove();
 }
 
 socket.on("OpponentsName", (OpponentsName) => {
@@ -47,15 +65,24 @@ socket.on("OpponentsName", (OpponentsName) => {
 });
 
 
-
+socket.on("OpponentFound", () => {
+  document.getElementById("joined").innerHTML = "Opponent Found";
+});
 
 socket.on("game.begin", (isPlayer1, deck) => {
-  // is opponent exprected to be false if refreshed first
+  submitButton.disabled = false;
+
+  SubmitPassword.remove();  
+  PasswordField.remove();
+  FindOpponent.remove();
+  pass.remove();
+
+
+  Messages.innerHTML = "Game Begins";
   Deck = deck;
   draw.disabled = false;
-  submitButton.disabled = false;
   
-  document.getElementById("joined").innerHTML = "Opponent Found";
+  
   amPlayer1 = isPlayer1;
   myTurn = isPlayer1;
 

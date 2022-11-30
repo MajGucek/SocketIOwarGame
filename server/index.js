@@ -56,33 +56,7 @@ io.on("connection", socket => {
 
 
 
-var players = {},
-    unmatched;
 
-function joinGame(socket) {
-    players[socket.id] = {
-        opponent: unmatched,
-        socket: socket
-    };
-    if (unmatched) {
-        players[unmatched].opponent = socket.id;
-        unmatched = null;
-    } else {
-        unmatched = socket.id;
-    }
-}
-
-
-
-function getOpponent(socket) {
-    if (!players[socket.id].opponent) {
-        return;
-    } else {
-        return players[players[socket.id].opponent].socket;
-    }
-
-    
-}
 
 
 const H2 = {value: 2, name: "Heart 2"};
@@ -248,16 +222,60 @@ function splitDeck() {
 }
 
 
-io.on("connection", function(socket) {
-    joinGame(socket);
-    splitDeck();
+var players = {},
+    unmatched;
 
+function joinGame(socket) {
+    players[socket.id] = {
+        opponent: unmatched,
+        socket: socket,
+    };
+    if (unmatched) {
+        players[unmatched].opponent = socket.id;
+        unmatched = null;
+    } else {
+        unmatched = socket.id;
+    }
+}
+
+
+
+function getOpponent(socket) {
+    if (!players[socket.id].opponent) {
+        return;
+    } else {
+        return players[players[socket.id].opponent].socket;
+    }
+
+    
+}
+
+
+io.on("connection", function(socket) {
+    let hasSubmittedName = 0;
+    
+    joinGame(socket);
 
     if (getOpponent(socket)) {
         
+        getOpponent(socket).emit("OpponentFound");
+        socket.emit("OpponentFound");
     }
 
 
+
+
+
+    splitDeck();
+
+    let pass = Math.floor(Math.random() * 10000);
+
+
+    if (getOpponent(socket)) {
+        console.log(pass);
+        getOpponent(socket).emit("password", pass); // p1
+        socket.emit("PasswordReq"); // p2
+    }
 
 
     socket.on("Name", (name) => {
@@ -267,11 +285,18 @@ io.on("connection", function(socket) {
 
     
 
-
-    if (getOpponent(socket)) {
-        socket.emit("game.begin", !isPlayer1, player2deck); // second player
-        getOpponent(socket).emit("game.begin", isPlayer1, player1deck); //first player
-    }
+    socket.on("PasswordRes", (PassToCompare) => {
+        if (pass == PassToCompare) {
+            console.log("Password Correct");
+            if (getOpponent(socket)) {
+                socket.emit("game.begin", !isPlayer1, player2deck); // second player
+                getOpponent(socket).emit("game.begin", isPlayer1, player1deck); //first player
+            }
+        } else {
+            console.log("Incorrect Password");  
+        }
+    });
+    
 
         
 
