@@ -10,6 +10,9 @@ html, body {
 #space {
   height: 5vh;
 }
+#space5 {
+  height: 5vh;
+}
 #space1 {
   height: 2.5vh;
 }
@@ -39,7 +42,7 @@ html, body {
   perspective: 1000px;
   border-radius: 10%;
   background-color: #FFF;
-  background-size: 50px 50px;
+  background-size: 50px 72.6px;
   background-position: 0 0, 25px 25px;
   background-image: linear-gradient(45deg, red 25%, transparent 25%, transparent 75%, red 75%, red),
                     linear-gradient(45deg, red 25%, transparent 25%, transparent 75%, red 75%, red);

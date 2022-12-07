@@ -4,7 +4,7 @@ let socket = io.connect(url);
 const draw = document.getElementById("draw");
 const currentCard = document.getElementById("CurrentCard");
 const Messages = document.getElementById("messages");
-
+const JoinedStatus = document.getElementById("status");
 const placeholderTextField = document.getElementById("placeholderTextField");
 const TextField = document.getElementById("TextField");
 const submitButton = document.getElementById("SubmitButton");
@@ -13,15 +13,12 @@ const FindOpponent = document.getElementById("FindOpponent");
 const pass = document.getElementById("pass");
 const SubmitPassword = document.getElementById("SubmitPass");
 const PasswordField = document.getElementById("PasswordField");
-
-
-
-
+const Status = document.getElementById("status");
 const flipCard = document.getElementsByClassName("flip-card");
-const CardText = document.getElementById("text");
+
+
 
 let InputedText;
-
 let amPlayer1;
 let myTurn;
 let Deck;
@@ -29,18 +26,23 @@ let OpponentsCard;
 let OpponentsWarCard;
 
 
-FindOpponent.onclick = () => {
-  window.location.reload();
-}
-
-
+// default state
+Messages.innerHTML = "";
 submitButton.disabled = true;
 draw.disabled = true;
 SubmitPassword.disabled = true;
+//
+
+
+
+
+
 
 
 socket.on("password", (password) => {
   pass.innerHTML = `Share this to your Opponent: ${password}`;
+  SubmitPassword.remove();
+  PasswordField.remove();
 });
 
 socket.on("PasswordReq", () => {
@@ -51,6 +53,10 @@ socket.on("PasswordReq", () => {
 SubmitPassword.onclick = () => {
   console.log(PasswordField.value);
   socket.emit("PasswordRes", PasswordField.value);
+}
+
+FindOpponent.onclick = () => {
+  window.location.reload();
 }
 
 
@@ -69,38 +75,6 @@ socket.on("OpponentFound", () => {
   document.getElementById("joined").innerHTML = "Opponent Found";
 });
 
-socket.on("game.begin", (isPlayer1, deck) => {
-  submitButton.disabled = false;
-
-  SubmitPassword.remove();  
-  PasswordField.remove();
-  FindOpponent.remove();
-  pass.remove();
-
-
-  Messages.innerHTML = "Game Begins";
-  Deck = deck;
-  draw.disabled = false;
-  
-  
-  amPlayer1 = isPlayer1;
-  myTurn = isPlayer1;
-
-
-  draw.innerHTML = Deck[0].name;
-
-
-
-
-
-
-
-  switchTurns();
-  console.log(Deck);
-});
-
-
-
 draw.onclick = () => {
   socket.emit("move", amPlayer1, Deck);
   CardText.style.pointerEvents = "none";
@@ -111,8 +85,6 @@ socket.on("switchTurn", () => {
   myTurn = !myTurn;
   switchTurns();
 });
-
-
 
 socket.on("OpponentsCardYouWonToo", (Card) => {
   OpponentsCard = Card;
@@ -127,16 +99,40 @@ socket.on("OpponentsWarCardYouLostToo", (Card) => {
   OpponentsWarCard = Card;
 });
 
-
-
 function displayUpdatedCards() {
   draw.innerHTML = Deck[0].name;
 }
-
 function updateDeck(updateddeck) {
   Deck = updateddeck;
   console.log("Updated Deck", Deck);
 }
+
+
+
+
+socket.on("game.begin", (isPlayer1, deck) => {
+  amPlayer1 = isPlayer1;
+  myTurn = isPlayer1;
+  Deck = deck;
+
+  submitButton.disabled = false;
+  draw.disabled = false;
+
+  SubmitPassword.remove();  
+  PasswordField.remove();
+  FindOpponent.remove();
+  pass.remove();
+
+  Messages.innerHTML = "Game Begins";
+  draw.innerHTML = Deck[0].name;
+  switchTurns();
+  console.log(Deck);
+});
+
+
+
+
+
 
 socket.on("Win", (UpdatedDeck) => {
   console.log("You Win!");
@@ -204,10 +200,10 @@ function renderGameLose() {
 }
 
 function renderWin() {
-  $("joined").text("You Win the Duel!");
+  Status.innerHTML = "You Won the Duel!";
 }
 function renderLose() {
-  $("joined").text("You Lose the Duel!");
+  Status.innerHTML = "You Lost the Duel!";
 }
 
 
@@ -233,7 +229,6 @@ function renderOpponentTurn() {
 socket.on("clientdisconnect", (id) => {
   console.log(`${id} disconnected!`);
   $("#draw").attr("disabled", true);
-  $("#messages").text("Your opponent left");
 });
 
 
