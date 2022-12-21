@@ -15,6 +15,7 @@ const SubmitPassword = document.getElementById("SubmitPass");
 const PasswordField = document.getElementById("PasswordField");
 const Status = document.getElementById("status");
 const flipCard = document.getElementsByClassName("flip-card");
+const cardImage = document.getElementById("cardImage");
 
 
 
@@ -232,7 +233,77 @@ socket.on("clientdisconnect", (id) => {
 });
 
 
-
+function getImage(cardName, CardValue) {
+  if (cardName.includes('Heart')) {
+    switch (CardValue) {
+      case 2: return "2_of_hearts.png"; break;
+      case 3: return "3_of_hearts.png"; break;
+      case 4: return "4_of_hearts.png"; break;
+      case 5: return "5_of_hearts.png"; break;
+      case 6: return "6_of_hearts.png"; break;
+      case 7: return "7_of_hearts.png"; break;
+      case 8: return "8_of_hearts.png"; break;
+      case 9: return "9_of_hearts.png"; break;
+      case 10: return "10_of_hearts.png"; break;
+      case 11: return "jack_of_hearts.png"; break;
+      case 12: return "queen_of_hearts.png"; break;
+      case 13: return "king_of_hearts.png"; break;
+      case 14: return "ace_of_hearts.png"; break;
+      default: return "Card not Found!"; break;
+    }
+  } else if (CardName.includes('Spade')) {
+    switch (CardValue) {
+      case 2: return "2_of_spades.png"; break;
+      case 3: return "3_of_spades.png"; break;
+      case 4: return "4_of_spades.png"; break;
+      case 5: return "5_of_spades.png"; break;
+      case 6: return "6_of_spades.png"; break;
+      case 7: return "7_of_spades.png"; break;
+      case 8: return "8_of_spades.png"; break;
+      case 9: return "9_of_spades.png"; break;
+      case 10: return "10_of_spades.png"; break;
+      case 11: return "jack_of_spades.png"; break;
+      case 12: return "queen_of_spades.png"; break;
+      case 13: return "king_of_spades.png"; break;
+      case 14: return "ace_of_spades.png"; break;
+      default: return "Card not Found!"; break;
+    }
+  } else if (CardName.includes('Diamond')) {
+    switch (CardValue) {
+      case 2: return "2_of_diamonds.png"; break;
+      case 3: return "3_of_diamonds.png"; break;
+      case 4: return "4_of_diamonds.png"; break;
+      case 5: return "5_of_diamonds.png"; break;
+      case 6: return "6_of_diamonds.png"; break;
+      case 7: return "7_of_diamonds.png"; break;
+      case 8: return "8_of_diamonds.png"; break;
+      case 9: return "9_of_diamonds.png"; break;
+      case 10: return "10_of_diamonds.png"; break;
+      case 11: return "jack_of_diamonds.png"; break;
+      case 12: return "queen_of_diamonds.png"; break;
+      case 13: return "king_of_diamonds.png"; break;
+      case 14: return "ace_of_diamonds.png"; break;
+      default: return "Card not Found!"; break;
+    }
+  } else if (CardName.includes('Club')) {
+    switch (CardValue) {
+      case 2: return "2_of_clubs.png"; break;
+      case 3: return "3_of_clubs.png"; break;
+      case 4: return "4_of_clubs.png"; break;
+      case 5: return "5_of_clubs.png"; break;
+      case 6: return "6_of_clubs.png"; break;
+      case 7: return "7_of_clubs.png"; break;
+      case 8: return "8_of_clubs.png"; break;
+      case 9: return "9_of_clubs.png"; break;
+      case 10: return "10_of_clubs.png"; break;
+      case 11: return "jack_of_clubs.png"; break;
+      case 12: return "queen_of_clubs.png"; break;
+      case 13: return "king_of_clubs.png"; break;
+      case 14: return "ace_of_clubs.png"; break;
+      default: return "Card not Found!"; break;
+    }
+  }
+}
 
 
 
