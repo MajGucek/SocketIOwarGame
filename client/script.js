@@ -4,7 +4,7 @@ let socket = io.connect(url);
 const draw = document.getElementById("draw");
 const currentCard = document.getElementById("CurrentCard");
 const Messages = document.getElementById("messages");
-const JoinedStatus = document.getElementById("status");
+const joined = document.getElementById("joined");
 const placeholderTextField = document.getElementById("placeholderTextField");
 const TextField = document.getElementById("TextField");
 const submitButton = document.getElementById("SubmitButton");
@@ -15,9 +15,11 @@ const SubmitPassword = document.getElementById("SubmitPass");
 const PasswordField = document.getElementById("PasswordField");
 const Status = document.getElementById("status");
 const flipCard = document.getElementsByClassName("flip-card");
-const cardImage = document.getElementById("cardImage");
-
-
+const inner = document.getElementById("flip-card-inner");
+let cardImage = document.getElementById("card-image");
+const Win = document.getElementById("win");
+const Lose = document.getElementById("lose");
+const OpCard = document.getElementById("OpCard");
 
 let InputedText;
 let amPlayer1;
@@ -25,6 +27,8 @@ let myTurn;
 let Deck;
 let OpponentsCard;
 let OpponentsWarCard;
+let WinShakeInterval;
+let LoseShakeInterval;
 
 
 // default state
@@ -34,20 +38,14 @@ draw.disabled = true;
 SubmitPassword.disabled = true;
 //
 
-
-
-
-
-
-
 socket.on("password", (password) => {
-  pass.innerHTML = `Share this to your Opponent: ${password}`;
+  pass.innerHTML = `Deli kodo nasprotniku: ${password}`;
   SubmitPassword.remove();
   PasswordField.remove();
 });
 
 socket.on("PasswordReq", () => {
-  pass.innerHTML = `Input your Password`;   
+  pass.innerHTML = `Vtipkaj kodo`;   
   SubmitPassword.disabled = false;
 });
 
@@ -56,9 +54,6 @@ SubmitPassword.onclick = () => {
   socket.emit("PasswordRes", PasswordField.value);
 }
 
-FindOpponent.onclick = () => {
-  window.location.reload();
-}
 
 
 submitButton.onclick = () => {
@@ -68,19 +63,17 @@ submitButton.onclick = () => {
 }
 
 socket.on("OpponentsName", (OpponentsName) => {
-  opponentName.innerHTML = `You're playing against: ${OpponentsName}`;
+  opponentName.innerHTML = `Igraš proti: ${OpponentsName}`;
 });
 
 
 socket.on("OpponentFound", () => {
-  document.getElementById("joined").innerHTML = "Opponent Found";
+  joined.innerHTML = "Nasprotnik najden";
 });
 
 draw.onclick = () => {
   socket.emit("move", amPlayer1, Deck);
-  CardText.style.pointerEvents = "none";
-
-
+  inner.style.transform = "rotateY(-180deg)";
 }
 socket.on("switchTurn", () => {
   myTurn = !myTurn;
@@ -101,8 +94,11 @@ socket.on("OpponentsWarCardYouLostToo", (Card) => {
 });
 
 function displayUpdatedCards() {
-  draw.innerHTML = Deck[0].name;
+  cardImage.alt = Deck[0].name;
+  cardImage.setAttribute("src", "./images/" + getImage(Deck[0].name, Deck[0].value));
+  //cardImage.src = "./images/" + getImage(Deck[0].name, Deck[0].value);
 }
+
 function updateDeck(updateddeck) {
   Deck = updateddeck;
   console.log("Updated Deck", Deck);
@@ -121,13 +117,14 @@ socket.on("game.begin", (isPlayer1, deck) => {
 
   SubmitPassword.remove();  
   PasswordField.remove();
-  FindOpponent.remove();
   pass.remove();
 
-  Messages.innerHTML = "Game Begins";
+  Messages.innerHTML = "Igra se začne!";
   draw.innerHTML = Deck[0].name;
   switchTurns();
   console.log(Deck);
+  displayUpdatedCards();
+  joined.remove();
 });
 
 
@@ -138,44 +135,50 @@ socket.on("game.begin", (isPlayer1, deck) => {
 socket.on("Win", (UpdatedDeck) => {
   console.log("You Win!");
   console.log(Deck[0].name, "Was higher than", OpponentsCard.name);
+  OpCard.innerHTML = Deck[0].name + " Je bil močnjejši kot " + OpponentsCard.name;
   renderWin();
 
   updateDeck(UpdatedDeck);
 
   displayUpdatedCards();
-  PossibleWarCard.innerHTML = `Possible War Card: ${Deck[4].name}`;
+  //PossibleWarCard.innerHTML = `Possible War Card: ${Deck[4].name}`;
 })
 
 socket.on("Lose", (UpdatedDeck) => {
   console.log("You Lose!");
   console.log(Deck[0].name, "Was lower than", OpponentsCard.name);
+  OpCard.innerHTML = Deck[0].name + " Je bil slabši kot " + OpponentsCard.name;
   renderLose();
 
   updateDeck(UpdatedDeck);
   
-  displayUpdatedCards();
-  PossibleWarCard.innerHTML = `Possible War Card: ${Deck[4].name}`;
+  displayUpdatedCards(Deck[0].name, Deck.value);
+  //PossibleWarCard.innerHTML = `Possible War Card: ${Deck[4].name}`;
 })
 
 socket.on("YouWinWar", (UpdatedDeck) => {
   console.log("You Win the War!");
-  console.log(Deck[4].name, "was higher than", OpponentsWarCard.name);
+  OpCard.innerHTML = Deck[4].name + " Je bil močnjejši kot " + OpponentsWarCard.name;
   // renderWarWin();
   updateDeck(UpdatedDeck);
 
   displayUpdatedCards();
-  PossibleWarCard.innerHTML = `Possible War Card: ${Deck[4].name}`;
+  //PossibleWarCard.innerHTML = `Possible War Card: ${Deck[4].name}`;
 })
 
 socket.on("YouLoseWar", (UpdatedDeck) => {
   console.log("You lose the War!");
-  console.log(Deck[4].name, "was lower than", OpponentsWarCard.name);
+  OpCard.innerHTML = Deck[4].name + " Je bil slabši kot " + OpponentsCard.name;
   // renderWarlose();
   updateDeck(UpdatedDeck);
 
   displayUpdatedCards();
-  PossibleWarCard.innerHTML = `Possible War Card: ${Deck[4].name}`;
+  //PossibleWarCard.innerHTML = `Possible War Card: ${Deck[4].name}`;
 })
+
+
+
+
 
 
 
@@ -188,23 +191,31 @@ socket.on("GameOverLost", () => {
 
 
 function renderGameWin() {
-  $("#messages").text("You Win The Game!");
+  $("#messages").text("Zmagaš Igro!");
   $("#draw").attr("disabled", true);
   $("#CurrentCard").text("");
   $("#WarCard").text("");
 }
 function renderGameLose() {
-  $("#messages").text("You Lose The Game!");
+  $("#messages").text("Izubiš igro!");
   $("#draw").attr("disabled", true);
   $("#CurrentCard").text("");
   $("#WarCard").text("");
 }
 
 function renderWin() {
-  Status.innerHTML = "You Won the Duel!";
+  Win.style.opacity = "100%";
+
+  setTimeout(() => {
+    Win.style.opacity = "0%";
+  }, 2500);
 }
 function renderLose() {
-  Status.innerHTML = "You Lost the Duel!";
+  Lose.style.opacity = "100%"
+
+  setTimeout(() => {
+    Lose.style.opacity = "0%";
+  }, 2500);
 }
 
 
@@ -218,12 +229,12 @@ if (myTurn == true) {
 
 
 function renderMyTurn() {
-  $("#messages").text("Your Turn");
+  $("#messages").text("Tvoja poteza");
   $("#draw").removeAttr("disabled");
 }
 
 function renderOpponentTurn() {
-  $("#messages").text("Your opponents turn");
+  $("#messages").text("Nasprotnikova poteza");
   $("#draw").attr("disabled", true);
 }
 
@@ -233,8 +244,8 @@ socket.on("clientdisconnect", (id) => {
 });
 
 
-function getImage(cardName, CardValue) {
-  if (cardName.includes('Heart')) {
+function getImage(CardName, CardValue) {
+  if (CardName.includes('Heart')) {
     switch (CardValue) {
       case 2: return "2_of_hearts.png"; break;
       case 3: return "3_of_hearts.png"; break;

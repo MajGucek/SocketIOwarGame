@@ -5,34 +5,14 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="styles.css">
-    <title>SA</title>
-    
-<style>
-body {
-    text-align: center;
-}
-.board {
-    margin-top: 5em;
-}
-.draw {
-    background-color: #333;
-}
-.opponent {
-    border: none;
-    padding: 15px 32px;
-    text-align: center;
-    
-    background-color: #333;
-}
-.joinRoom {
-    font-size: 1em;
-}
-</style>
+    <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap" rel="stylesheet">
+    <title>Vojna</title>
 </head>
 <body>
+    
 
 <div id="messages">Messages</div>
-<div id="joined">Waiting for opponent to join...</div>
+<div id="joined">Čakam nasprotnika</div>
 
 <div id="space1"></div>
 
@@ -40,18 +20,18 @@ body {
 
 
 
-<input id="TextField" type="text" name="text" placeholder="Input Name"/>
-<button id="SubmitButton">Submit Name</button>
+<input id="TextField" type="text" name="text" placeholder="Vpiši ime"/>
+<button id="SubmitButton">Vpiši ime</button>
 
 <div id="space"></div>
 
-<div id="opponentName">You Opponents Name</div>
+<div id="opponentName">Nasprotnikovo ime</div>
 <div id="space5"></div>
 <div id="status"></div>
-<button id="FindOpponent">Find Opponent</button>
-<div id="pass">Share this to your opponent</div>
-<input id="PasswordField" type="text" name="text" placeholder="Input Password"/>
-<button id="SubmitPass">Submit Pass</button>
+<div id="pass">Deli nasprotniku</div>
+<div id="OpCard"></div>
+<input id="PasswordField" type="text" name="text" placeholder="Vpiši geslo"/>
+<button id="SubmitPass">Vpiši geslo</button>
 
 <div id="space2"></div>
 
@@ -61,19 +41,21 @@ body {
 <div id="backcard1"></div>
 <div id="backcard2"></div>
 
+
 <div class="flip-card">
     <div class="flip-card-inner">
       <div class="flip-card-front">
         
       </div>
       <div class="flip-card-back">
-        <button id="draw" onclick="onDraw()" disabled="disabled"><img src="./images/red_joker.png" width="500px" height="726px" id="card-image"></button>
+        <button id="draw" onclick="onDraw()" disabled="disabled"><img src="./images/red_joker.png" width="187.5px" height="272.25px" id="card-image" alt="Red Joker"></button>
         
       </div>
     </div>
   </div>
 
-
+<div id="win">Zmaga!</div>
+<div id="lose">Poraz!</div>
   
     
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
